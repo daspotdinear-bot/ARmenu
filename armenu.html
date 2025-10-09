@@ -17,6 +17,7 @@
       background-size: cover;
       color: #244376;
     }
+
     header {
       position: sticky;
       top: 0;
@@ -33,7 +34,7 @@
     header h1 {
       margin: 0;
       font-size: 1.5rem;
-      color: #244376;
+      color: #f7f8fa;
     }
 
     .menu-toggle {
@@ -49,7 +50,7 @@
       display: block;
       height: 3px;
       width: 100%;
-      background: #244376;
+      background: #BA262B;
       border-radius: 2px;
       transition: all 0.3s ease;
     }
@@ -73,7 +74,7 @@
 
     .nav-links a {
       text-decoration: none;
-      color: #244376;
+      color: #BA262B;
       font-weight: 500;
       margin: 8px 14px;
       transition: color 0.3s;
@@ -82,15 +83,36 @@
     .nav-links a:hover {
       color: #ff9900;
     }
+    footer{
+        position:fixed;
+        bottom:0px;
+        width:100%;
+        background: rgba(255, 255, 255, 0.62);
+    }
 
     @media(max-width:768px) {
+        header{
+          border-radius:25px;
+          top:20px; 
+          margin:10px; 
+          background: rgba(196, 196, 196, 0.82);
+        }
+        nav {
+      position: sticky;
+      top: 100px;
+      z-index: 250;
+    }
       .nav-links {
         display: none;
         flex-direction: column;
       }
 
       .nav-links.active {
+        margin: 10px;
+        border-radius: 20px;
         display: flex;
+        align-items: center
+
       }
 
       .menu-toggle {
@@ -105,7 +127,7 @@
     }
 
     .section-header {
-      background: rgba(255,255,255,0.9);
+      background: #231F20;
       padding: 15px;
       margin: 30px 0 10px;
       border-radius: 10px;
@@ -116,12 +138,14 @@
     .section-header h2 {
       text-align: center;
       margin: 0;
-      color: #244376;
+      color: #fdfdfde6;
+      font-family: math;
     }
     .section-header h5 {
     text-align: center;
     margin: 0;
-    color: #244376;
+    color: #fdfdfde6;
+    font-family: math;
 }
 
     .card {
@@ -140,7 +164,7 @@
     model-viewer {
       width: 100%;
       height: 350px;
-      background-color: #fff;
+      background-color: rgb(0, 0, 0);
     }
 
     .attribution {
@@ -148,6 +172,16 @@
       padding: 15px;
       font-size: 0.95rem;
       color: rgb(255, 255, 255);
+      background: black;
+    }
+    .attribution h4{
+        margin:5px;
+    }
+    .price{
+        background-color:black ;
+        color: #BA262B !important;
+           margin:0px;
+        
     }
 
     .hidden { display: none; }
@@ -156,7 +190,8 @@
 
 <body>
   <header>
-    <h1>DaSpot AR Menu</h1>
+    <img src="https://daspotdinear-bot.github.io/ARmenu/logo.png"  style="width: 50px;"/>
+    <h1> AR Menu</h1>
     <div class="menu-toggle" id="menuToggle">
       <span></span>
       <span></span>
@@ -190,8 +225,12 @@
    
     <div class="section-header" id="ricebowls">
         <h2>CIOTOLA DI RISO</h2>
-        <h5>RICEBOWLS</h5>
+        <h5 >RICEBOWLS</h5>
         <div class="card" id="mexicanrice">
+            <section class="attribution">
+                <h4>MEXICAN RICE CHICKEN</h4>
+                <h2 class="price">&#8377;499</h2>    
+            </section>
             <model-viewer src="https://daspotdinear-bot.github.io/ARmenu/MariconRiceChicken_final.glb"
                           ios-src="https://daspotdinear-bot.github.io/ARmenu/MariconRiceChicken_final.usdz"
                           alt="mexicanrice"
@@ -201,9 +240,6 @@
                           ar-placement="floor"
                           auto-rotate ar>
             </model-viewer>
-            <section class="attribution">
-                <h5>MEXICAN RICE CHICKEN</h5>
-            </section>
         </div>
     </div>
     <div class="section-header" id="desserts">
@@ -215,6 +251,10 @@
         <h2>PIATTO PRINCIPALE</h2>
         <h5>MAIN COURSE</h5>
         <div class="card" id="marrymechicken">
+            <section class="attribution">
+                <h4>MARRY ME CHICKEN</h4>
+                <h2 class="price">&#8377;499</h2>
+            </section>
             <model-viewer src="https://daspotdinear-bot.github.io/ARmenu/marrychicken_final.glb"
                           ios-src="https://daspotdinear-bot.github.io/ARmenu/marrychicken_final.usdz"
                           poster="https://daspotdinear-bot.github.io/ARmenu/marrychicken_final.glb"
@@ -226,11 +266,12 @@
                           auto-rotate
                           ar>
             </model-viewer>
-            <section class="attribution">
-                <h5>MARRY ME CHICKEN</h5>
-            </section>
         </div>
         <div class="card" id="lemonbutterchicken">
+            <section class="attribution">
+                <h4>LEMON BUTTER CHICKEN</h4>
+                <h2 class="price">&#8377;499</h2>
+            </section>
             <model-viewer src="https://daspotdinear-bot.github.io/ARmenu/Lemonbutterchicken_final.glb"
                           ios-src="https://daspotdinear-bot.github.io/ARmenu/Lemonbutterchicken_final.usdz"
                           poster="https://daspotdinear-bot.github.io/ARmenu/Lemonbutterchicken_final.glb"
@@ -242,11 +283,12 @@
                           auto-rotate
                           ar>
             </model-viewer>
-            <section class="attribution">
-                <h5>LEMON BUTTER CHICKEN</h5>
-            </section>
         </div>
         <div class="card" id="buffalolemonpepperfish">
+            <section class="attribution">
+                <h4>BUFFALO LEMON PEPPER FISH</h4>
+                <h2 class="price">&#8377;499</h2>
+            </section>
             <model-viewer src="https://daspotdinear-bot.github.io/ARmenu/Lemonpepperfish_final.glb"
                           ios-src="https://daspotdinear-bot.github.io/ARmenu/Lemonpepperfish_final.usdz"
                           poster="https://daspotdinear-bot.github.io/ARmenu/Lemonpepperfish_final.glb"
@@ -258,11 +300,13 @@
                           auto-rotate
                           ar>
             </model-viewer>
-            <section class="attribution">
-                <h5>BUFFALO LEMON PEPPER FISH</h5>
-            </section>
+            
         </div>
         <div class="card" id="jackspicedgrilledfish">
+            <section class="attribution">
+                <h4>JACK SPICED GRILLED FISH</h4>
+                <h2 class="price">&#8377;499</h2>
+            </section>
             <model-viewer src="https://daspotdinear-bot.github.io/ARmenu/Jarkgrilledfish_final.glb"
                           ios-src="https://daspotdinear-bot.github.io/ARmenu/Jarkgrilledfish_final.usdz"
                           poster="https://daspotdinear-bot.github.io/ARmenu/Jarkgrilledfish_final.glb"
@@ -274,9 +318,7 @@
                           auto-rotate
                           ar>
             </model-viewer>
-            <section class="attribution">
-                <h5>JACK SPICED GRILLED FISH</h5>
-            </section>
+           
         </div>
     </div>
     
@@ -296,6 +338,10 @@
         <h2>JIANG ZHI</h2>
         <h5>SAUCES</h5>
         <div class="card" id="thainonvegcurryyellow">
+            <section class="attribution">
+                <h4>THAI NON VEG CURRY (YELLOW)</h4>
+                <h2 class="price">&#8377;499</h2>
+            </section>
             <model-viewer class="ar-model"
                           src="https://daspotdinear-bot.github.io/ARmenu/thainonvegcurryyellow_final.glb"
                           ios-src="https://daspotdinear-bot.github.io/ARmenu/thainonvegcurryyellow_final.usdz"
@@ -308,11 +354,13 @@
                           auto-rotate
                           ar>
             </model-viewer>
-            <section class="attribution">
-                <h5>THAI NON VEG CURRY (YELLOW)</h5>
-            </section>
+            
         </div>
         <div class="card" id="thainonvegcurrygreen">
+            <section class="attribution">
+                <h4>THAI NON VEG CURRY (GREEN)</h4>
+                <h2 class="price">&#8377;499</h2>
+            </section>
             <model-viewer class="ar-model"
                           src="https://daspotdinear-bot.github.io/ARmenu/thainonvegcurrygreen_final.glb"
                           ios-src="https://daspotdinear-bot.github.io/ARmenu/thainonvegcurrygreen_final.usdz"
@@ -325,11 +373,12 @@
                           auto-rotate
                           ar>
             </model-viewer>
-            <section class="attribution">
-                <h5>THAI NON VEG CURRY (GREEN)</h5>
-            </section>
         </div>
         <div class="card" id="thainonvegcurryred">
+            <section class="attribution">
+                <h4>THAI NON VEG CURRY (RED)</h4>
+                <h2 class="price">&#8377;499</h2>
+            </section>
             <model-viewer class="ar-model"
                           src="https://daspotdinear-bot.github.io/ARmenu/thainonvegcurryred_final.glb"
                           ios-src="https://daspotdinear-bot.github.io/ARmenu/thainonvegcurryred_final.usdz"
@@ -342,15 +391,17 @@
                           auto-rotate
                           ar>
             </model-viewer>
-            <section class="attribution">
-                <h5>THAI NON VEG CURRY (RED)</h5>
-            </section>
+           
         </div>
     </div>
    
     <div class="section-header" id="sizzlers">
         <h2>SMOKY SIZZLERS</h2>
         <div class="card" id="chickensteaksizzler">
+            <section class="attribution">
+                <h4>CHICKEN STEAK SIZZLER</h4>
+                <h2 class="price">&#8377;499</h2>
+            </section>
             <model-viewer class="ar-model"
                           src="https://daspotdinear-bot.github.io/ARmenu/Chickensteaksizzler_final.glb"
                           ios-src="https://daspotdinear-bot.github.io/ARmenu/Chickensteaksizzler_final.usdz"
@@ -363,15 +414,17 @@
                           auto-rotate
                           ar>
             </model-viewer>
-            <section class="attribution">
-                <h5>CHICKEN STEAK SIZZLER</h5>
-            </section>
+            
         </div>
     </div>
    
     <div class="section-header" id="ramen">
         <h2>RAMEN</h2>
         <div class="card" id="vegramen">
+            <section class="attribution">
+                <h4>VEG RAMEN</h4>
+                <h2 class="price">&#8377;349</h2>
+            </section>
             <model-viewer class="ar-model"
                           src="https://daspotdinear-bot.github.io/ARmenu/vegramen_final.glb"
                           ios-src="https://daspotdinear-bot.github.io/ARmenu/vegramen_final.usdz"
@@ -384,11 +437,13 @@
                           auto-rotate
                           ar>
             </model-viewer>
-            <section class="attribution">
-                <h5>VEG RAMEN</h5>
-            </section>
+            
         </div>
         <div class="card" id="chickenramen">
+            <section class="attribution">
+                <h4>CHICKEN RAMEN</h4>
+                <h2 class="price">&#8377;449</h2>
+            </section>
             <model-viewer class="ar-model"
                           src="https://daspotdinear-bot.github.io/ARmenu/Chickenramen_final.glb"
                           ios-src="https://daspotdinear-bot.github.io/ARmenu/Chickenramen_final.usdz"
@@ -401,9 +456,7 @@
                           auto-rotate
                           ar>
             </model-viewer>
-            <section class="attribution">
-                <h5>CHICKEN RAMEN</h5>
-            </section>
+            
         </div>
     </div>
     <div class="section-header" id="pantobento">
@@ -412,6 +465,10 @@
     <div class="section-header" id="pizzeria">
         <h2>PIZZERIA</h2>
         <div class="card" id="paneertikkapizza">
+            <section class="attribution">
+                <h4>PANEER TIKKA PIZZA</h4>
+                <h2 class="price">&#8377;299/&#8377;369</h2>
+            </section>
             <model-viewer class="ar-model"
                           src="https://daspotdinear-bot.github.io/ARmenu/paneertikkapizza_final.glb"
                           ios-src="https://daspotdinear-bot.github.io/ARmenu/paneertikkapizza_final.usdz"
@@ -424,14 +481,16 @@
                           auto-rotate
                           ar>
             </model-viewer>
-            <section class="attribution">
-                <h5>PANEER TIKKA PIZZA</h5>
-            </section>
+            
         </div>
     </div>
     <div class="section-header" id="burger">
         <h2>BURGERS</h2>
         <div class="card" id="chickenburger">
+            <section class="attribution">
+                <h4>CHICKEN BURGER</h4>
+                <h2 class="price">&#8377;299</h2>
+            </section>
             <model-viewer class="ar-model"
                           src="https://daspotdinear-bot.github.io/ARmenu/Chickenburger_Final.glb"
                           ios-src="https://daspotdinear-bot.github.io/ARmenu/Chickenburger_Final.usdz"
@@ -444,11 +503,13 @@
                           auto-rotate
                           ar>
             </model-viewer>
-            <section class="attribution">
-                <h5>CHICKEN BURGER</h5>
-            </section>
+            
         </div>
         <div class="card" id="pulledchickenburger">
+            <section class="attribution">
+                <h4>PULLED CHICKEN BURGER</h4>
+                <h2 class="price">&#8377;299</h2>
+            </section>
             <model-viewer class="ar-model"
                           src="https://daspotdinear-bot.github.io/ARmenu/Charcoalpulledchickenburger_final.glb"
                           ios-src="https://daspotdinear-bot.github.io/ARmenu/Charcoalpulledchickenburger_final.usdz"
@@ -461,11 +522,13 @@
                           auto-rotate
                           ar>
             </model-viewer>
-            <section class="attribution">
-                <h5>PULLED CHICKEN BURGER</h5>
-            </section>
+            
         </div>
         <div class="card" id="charcoalchickenburger">
+            <section class="attribution">
+                <h4>CHARCOAL CHICKEN BURGER</h4>
+                <h2 class="price">&#8377;299</h2>
+            </section>
             <model-viewer class="ar-model"
                           src="https://daspotdinear-bot.github.io/ARmenu/pulledchickenburger_final.glb"
                           ios-src="https://daspotdinear-bot.github.io/ARmenu/pulledchickenburger_final.usdz"
@@ -478,14 +541,16 @@
                           auto-rotate
                           ar>
             </model-viewer>
-            <section class="attribution">
-                <h5>CHARCOAL CHICKEN BURGER</h5>
-            </section>
+           
         </div>
     </div>
     <div class="section-header" id="sandwiches">
         <h2>SANDWICHES</h2>
         <div class="card" id="paneersandwich">
+            <section class="attribution">
+                <h4>PANEER CLUB SANDWICHED</h4>
+                <h2 class="price">&#8377;299</h2>
+            </section>
             <model-viewer class="ar-model"
                           src="https://daspotdinear-bot.github.io/ARmenu/periperipaneersandeveg_final.glb"
                           ios-src="https://daspotdinear-bot.github.io/ARmenu/periperipaneersandeveg_final.usdz"
@@ -498,14 +563,16 @@
                           auto-rotate
                           ar>
             </model-viewer>
-            <section class="attribution">
-                <h5>PANEER CLUB SANDWICHED</h5>
-            </section>
+            
         </div>
     </div>
     <div class="section-header" id="momosrolls">
         <h2>MOMOS & ROLLS</h2>
         <div class="card" id="chickenmomos">
+            <section class="attribution">
+                <h4>CHICKEN MOMOS</h4>
+                <h2 class="price">&#8377;199</h2>
+            </section>
             <model-viewer class="ar-model"
                           src="https://daspotdinear-bot.github.io/ARmenu/ChickenMomos_Final.glb"
                           ios-src="https://daspotdinear-bot.github.io/ARmenu/ChickenMomos_Final.usdz"
@@ -518,11 +585,13 @@
                           auto-rotate
                           ar>
             </model-viewer>
-            <section class="attribution">
-                <h5>CHICKEN MOMOS</h5>
-            </section>
+            
         </div>
         <div class="card" id="vegmomos">
+            <section class="attribution">
+                <h4>VEG MOMOS</h4>
+                <h2 class="price">&#8377;149</h2>
+            </section>
             <model-viewer class="ar-model"
                           src="https://daspotdinear-bot.github.io/ARmenu/CheeseBalls_Final.glb"
                           ios-src="https://daspotdinear-bot.github.io/ARmenu/CheeseBalls_Final.usdz"
@@ -535,11 +604,13 @@
                           auto-rotate
                           ar>
             </model-viewer>
-            <section class="attribution">
-                <h5>VEG MOMOS</h5>
-            </section>
+            
         </div>
         <div class="card" id="tomyummomosveg">
+            <section class="attribution">
+                <h4>TOM YUM MOMOS (VEG)</h4>
+                <h2 class="price">&#8377;169</h2>
+            </section>
             <model-viewer class="ar-model"
                           src="https://daspotdinear-bot.github.io/ARmenu/vegmomos_final.glb"
                           ios-src="https://daspotdinear-bot.github.io/ARmenu/vegmomos_final.usdz"
@@ -552,11 +623,13 @@
                           auto-rotate
                           ar>
             </model-viewer>
-            <section class="attribution">
-                <h5>TOM YUM MOMOS (VEG)</h5>
-            </section>
+            
         </div>
         <div class="card" id="tomyummomosnonveg">
+            <section class="attribution">
+                <h4>TOM YUM MOMOS (NONVEG)</h4>
+                <h2 class="price">&#8377;199</h2>
+            </section>
             <model-viewer class="ar-model"
                           src="https://daspotdinear-bot.github.io/ARmenu/tomyummomosnonveg_final.glb"
                           ios-src="https://daspotdinear-bot.github.io/ARmenu/tomyummomosnonveg_final.usdz"
@@ -569,9 +642,7 @@
                           auto-rotate
                           ar>
             </model-viewer>
-            <section class="attribution">
-                <h5>TOM YUM MOMOS (NONVEG)</h5>
-            </section>
+            
         </div>
     </div>
     <div class="section-header" id="bruschettas">
@@ -587,6 +658,10 @@
         <h2>WESTERN</h2>
         <h5>APPETISERS</h5>
         <div class="card" id="cheeseballs">
+            <section class="attribution">
+                <h4>CHEESE BALLS</h4>
+                <h2 class="price">&#8377;269</h2>
+            </section>
             <model-viewer class="ar-model"
                           src="https://daspotdinear-bot.github.io/ARmenu/tomyummomosveg_final.glb"
                           ios-src="https://daspotdinear-bot.github.io/ARmenu/tomyummomosveg_final.usdz"
@@ -599,11 +674,12 @@
                           auto-rotate
                           ar>
             </model-viewer>
-            <section class="attribution">
-                <h5>CHEESE BALLS</h5>
-            </section>
         </div>
         <div class="card" id="koreanfriedchicken">
+            <section class="attribution">
+                <h4>KOREAN FRIED CHICKEN</h4>
+                <h2 class="price">&#8377;369</h2>
+            </section>
             <model-viewer class="ar-model"
                           src="https://daspotdinear-bot.github.io/ARmenu/Koreanfriedchicken_final.glb"
                           ios-src="https://daspotdinear-bot.github.io/ARmenu/Koreanfriedchicken_final.usdc"
@@ -616,11 +692,13 @@
                           auto-rotate
                           ar>
             </model-viewer>
-            <section class="attribution">
-                <h5>KOREAN FRIED CHICKEN</h5>
-            </section>
+            
         </div>
         <div class="card" id="phuketfish">
+            <section class="attribution">
+                <h4>PHUKET FISH</h4>
+                <h2 class="price">&#8377;449</h2>
+            </section>
             <model-viewer class="ar-model"
                           src="https://daspotdinear-bot.github.io/ARmenu/phuketfish_final.glb"
                           ios-src="https://daspotdinear-bot.github.io/ARmenu/phuketfish_final.usdz"
@@ -633,11 +711,13 @@
                           auto-rotate
                           ar>
             </model-viewer>
-            <section class="attribution">
-                <h5>PHUKET FISH</h5>
-            </section>
+            
         </div>
         <div class="card" id="tempuraprawn">
+            <section class="attribution">
+                <h4>TEMPURA PRAWN</h4>
+                <h2 class="price">&#8377;429</h2>
+            </section>
             <model-viewer class="ar-model"
                           src="https://daspotdinear-bot.github.io/ARmenu/Afganimurghtikka_final.glb"
                           ios-src="https://daspotdinear-bot.github.io/ARmenu/Afganimurghtikka_final.usdz"
@@ -650,9 +730,7 @@
                           auto-rotate
                           ar>
             </model-viewer>
-            <section class="attribution">
-                <h5>TEMPURA PRAWN</h5>
-            </section>
+           
         </div>
     </div>
     <div class="section-header" id="woktofork">
@@ -664,7 +742,7 @@
 
   </main>
 
-  <footer class="attribution">© 2025 Dine AR. All rights reserved.</footer>
+  <footer ><p style="text-align:center;color:#BA262B">© 2025 Dine AR. All rights reserved.</p></footer>
 
   <script>
     // Hamburger menu toggle
