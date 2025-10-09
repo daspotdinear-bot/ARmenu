@@ -1,644 +1,708 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>3D Model Viewer</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    
-     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script> 
-        <script src="https://unpkg.com/focus-visible@5.0.2/dist/focus-visible.js" defer></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DaSpot - 3D Menu Viewer</title>
 
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: "Poppins", sans-serif;
-            background: url('https://source.unsplash.com/1600x900/?restaurant,food') no-repeat center center/cover;
-             color: #244376;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+  <!-- Model Viewer -->
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script> 
 
-        /* Header */
-        .header {
-            width: 100%;
-            padding: 20px 0;
-            background: rgba(0, 0, 0, 0.6);
-            text-align: center;
-            color: white;
-            font-size: 24px;
-            font-weight: bold;
-            letter-spacing: 2px;
-        }
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: url('https://daspotdinear-bot.github.io/ARmenu/background.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: #244376;
+    }
 
-        .container {
-            width: 90%;
-            max-width: 1000px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 30px;
-            padding-bottom: 50px;
-        }
-        
-        /* NEW SECTION HEADER STYLE */
-        .section-header {
-            width: 100%;
-            text-align: center;
-            margin: 30px 0 10px 0; /* Add some space around it */
-            padding: 10px 0;
-            color: white; /* Use a color that stands out against the background image */
-            background-color: rgba(36, 67, 118, 0.8); /* Semi-transparent version of your primary blue color: #244376 */
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        }
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 300;
+      background: rgba(255,255,255,0.95);
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      backdrop-filter: blur(6px);
+    }
 
-        .section-header h2 {
-            margin: 0 0 5px 0;
-            font-size: 1.8em;
-            font-weight: 700;
-            letter-spacing: 1px;
-        }
+    header h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      color: #244376;
+    }
 
-        .section-header p {
-            margin: 0;
-            font-size: 0.9em;
-            font-weight: 300;
-        }
-        /* END NEW SECTION HEADER STYLE */
+    .menu-toggle {
+      display: none;
+      flex-direction: column;
+      justify-content: space-between;
+      width: 25px;
+      height: 18px;
+      cursor: pointer;
+    }
 
-        .card {
-            justify-self: center;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
-            width: 100%;
-            max-width: 600px;
-            margin: 20px 0;
-            transition: transform 0.3s ease-in-out;
-        }
-.hidden {
-             display: none; /* Hide specific cards when URL has ?card= */
-         }
-        .card:hover {
-            transform: scale(1.02);
-        }
+    .menu-toggle span {
+      display: block;
+      height: 3px;
+      width: 100%;
+      background: #244376;
+      border-radius: 2px;
+      transition: all 0.3s ease;
+    }
 
-        model-viewer {
-            width: 100%;
-            height: 400px;
-            background-color: #E3F2FD;
-            --poster-color: transparent;
-        }
+    nav {
+      position: sticky;
+      top: 60px;
+      z-index: 250;
+    }
 
-        .attribution {
-            padding: 20px;
-            text-align: center;
-            background: #fff;
-        }
+    .nav-links {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      list-style: none;
+      padding: 10px 0;
+      margin: 0;
+      background: rgba(255,255,255,0.9);
+      backdrop-filter: blur(5px);
+    }
 
-        .attribution h1 {
-            margin: 0;
-            font-size: 1.5em;
-            font-weight: 600;
-            color: #2c3e50;
-        }
+    .nav-links a {
+      text-decoration: none;
+      color: #244376;
+      font-weight: 500;
+      margin: 8px 14px;
+      transition: color 0.3s;
+    }
 
-        /* Footer */
-        .footer {
-            width: 100%;
-            padding: 15px 0;
-            text-align: center;
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            font-size: 14px;
-            position: fixed;
-            bottom: 0;
-        }
-    </style>
-     <script>
-         document.addEventListener("DOMContentLoaded", function() {
-             function showSelectedCard() {
-                 const urlParams = new URLSearchParams(window.location.search);
-                 const cardId = urlParams.get('section'); // Get 'card' parameter from URL
-                 const cards = document.querySelectorAll('.section-header');
- 
-                 if (cardId) {
-                     // If 'card' is present in the URL, hide all cards first
-                     cards.forEach(card => card.classList.add('hidden'));
- 
-                     // Show only the selected card
-                     const selectedCard = document.getElementById(cardId);
-                     if (selectedCard) {
-                         selectedCard.classList.remove('hidden');
-                     }
-                 }
-             }
- 
-             showSelectedCard(); // Run on page load
-         });
-        window.addEventListener('DOMContentLoaded', () => {
-        const models = document.querySelectorAll('.ar-model');
+    .nav-links a:hover {
+      color: #ff9900;
+    }
 
-        models.forEach((model) => {
-          model.pause(); // stop animation on load
+    @media(max-width:768px) {
+      .nav-links {
+        display: none;
+        flex-direction: column;
+      }
 
-          model.addEventListener('ar-status', (event) => {
-            if (event.detail.status === 'session-started') {
-              model.currentTime = 0;
-              model.play();
-            }
-            if (event.detail.status === 'not-presenting') {
-              model.pause();
-            }
-          });
-        });
-      });
-     </script>
+      .nav-links.active {
+        display: flex;
+      }
+
+      .menu-toggle {
+        display: flex;
+      }
+    }
+
+    main {
+      max-width: 1000px;
+      margin: 30px auto;
+      padding: 0 15px;
+    }
+
+    .section-header {
+      background: rgba(255,255,255,0.9);
+      padding: 15px;
+      margin: 30px 0 10px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      backdrop-filter: blur(5px);
+    }
+
+    .section-header h2 {
+      text-align: center;
+      margin: 0;
+      color: #244376;
+    }
+    .section-header h5 {
+    text-align: center;
+    margin: 0;
+    color: #244376;
+}
+
+    .card {
+      background: rgba(255,255,255,0.95);
+      border-radius: 10px;
+      margin: 20px 0;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      transition: all 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+    }
+
+    model-viewer {
+      width: 100%;
+      height: 350px;
+      background-color: #fff;
+    }
+
+    .attribution {
+      text-align: center;
+      padding: 15px;
+      font-size: 0.95rem;
+      color: rgb(255, 255, 255);
+    }
+
+    .hidden { display: none; }
+  </style>
 </head>
+
 <body>
-    <div class="header">DaSpot - 3D Menu Viewer</div>
+  <header>
+    <h1>DaSpot AR Menu</h1>
+    <div class="menu-toggle" id="menuToggle">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </header>
 
-    <div class="container">
-        <div class="section-header" id="ricebowls">
-            <h2>CIOTOLA DI RISO</h2>
-            <h5>RICEBOWLS</h5>
-            <div class="card" id="mexicanrice">
-                <model-viewer src="https://daspotdinear-bot.github.io/ARmenu/MariconRiceChicken_final.glb"
-                              ios-src="https://daspotdinear-bot.github.io/ARmenu/MariconRiceChicken_final.usdz"
-                              alt="mexicanrice"
-                              ar-modes="scene-viewer quick-look webxr"
-                              shadow-intensity="1"
-                              camera-controls
-                              ar-placement="floor"
-                              auto-rotate ar>
-                </model-viewer>
-                <section class="attribution">
-                    <h1>MEXICAN RICE CHICKEN</h1>
-                </section>
-            </div>
-        </div>
-       
-        <div class="section-header" id="desserts">
-            <h2>DESSERTS</h2>
-           
-        </div>
+  <nav>
+    <div class="nav-links" id="navLinks">
+      <a href="?section=ricebowls">Rice Bowls</a>
+      <a href="?section=desserts">Desserts</a>
+      <a href="?section=maincourse">Main Course</a>
+      <a href="?section=maincourse2">Veg Zhu Cai</a>
+      <a href="?section=noodles">Noodles</a>
+      <a href="?section=sauces">Sauces</a>
+      <a href="?section=sizzlers">Sizzlers</a>
+      <a href="?section=ramen">Ramen</a>
+      <a href="?section=pantobento">Pan to Bento</a>
+      <a href="?section=pizzeria">Pizzeria</a>
+      <a href="?section=burger">Burgers</a>
+      <a href="?section=sandwiches">Sandwiches</a>
+      <a href="?section=momosrolls">Momos & Rolls</a>
+      <a href="?section=bruschettas">Bruschettas</a>
+      <a href="?section=quesedilla">Quesedilla</a>
+      <a href="?section=enchilades">Enchilades</a>
+      <a href="?section=appetisers">Western</a>
+    </div>
+  </nav>
 
-        <div class="section-header" id="maincourse">
-            <h2>PIATTO PRINCIPALE</h2>
-            <h5>MAIN COURSE</h5>
-            <div class="card" id="marrymechicken">
-                <model-viewer src="https://daspotdinear-bot.github.io/ARmenu/marrychicken_final.glb"
-                              ios-src="https://daspotdinear-bot.github.io/ARmenu/marrychicken_final.usdz"
-                              poster="https://daspotdinear-bot.github.io/ARmenu/marrychicken_final.glb"
-                              alt="marrymechicken"
-                              ar-modes="scene-viewer quick-look webxr"
-                              shadow-intensity="1"
-                              camera-controls
-                              ar-placement="floor"
-                              auto-rotate
-                              ar>
-                </model-viewer>
-                <section class="attribution">
-                    <h1>MARRY ME CHICKEN</h1>
-                </section>
-            </div>
-            <div class="card" id="lemonbutterchicken">
-                <model-viewer src="https://daspotdinear-bot.github.io/ARmenu/Lemonbutterchicken_final.glb"
-                              ios-src="https://daspotdinear-bot.github.io/ARmenu/Lemonbutterchicken_final.usdz"
-                              poster="https://daspotdinear-bot.github.io/ARmenu/Lemonbutterchicken_final.glb"
-                              alt="lemonbutterchicken"
-                              ar-modes="scene-viewer quick-look webxr"
-                              shadow-intensity="1"
-                              camera-controls
-                              ar-placement="floor"
-                              auto-rotate
-                              ar>
-                </model-viewer>
-                <section class="attribution">
-                    <h1>LEMON BUTTER CHICKEN</h1>
-                </section>
-            </div>
-            <div class="card" id="buffalolemonpepperfish">
-                <model-viewer src="https://daspotdinear-bot.github.io/ARmenu/Lemonpepperfish_final.glb"
-                              ios-src="https://daspotdinear-bot.github.io/ARmenu/Lemonpepperfish_final.usdz"
-                              poster="https://daspotdinear-bot.github.io/ARmenu/Lemonpepperfish_final.glb"
-                              alt="buffalolemonpepperfish"
-                              ar-modes="scene-viewer quick-look webxr"
-                              shadow-intensity="1"
-                              camera-controls
-                              ar-placement="floor"
-                              auto-rotate
-                              ar>
-                </model-viewer>
-                <section class="attribution">
-                    <h1>BUFFALO LEMON PEPPER FISH</h1>
-                </section>
-            </div>
-            <div class="card" id="jackspicedgrilledfish">
-                <model-viewer src="https://daspotdinear-bot.github.io/ARmenu/Jarkgrilledfish_final.glb"
-                              ios-src="https://daspotdinear-bot.github.io/ARmenu/Jarkgrilledfish_final.usdz"
-                              poster="https://daspotdinear-bot.github.io/ARmenu/Jarkgrilledfish_final.glb"
-                              alt="jackspicedgrilledfish"
-                              ar-modes="scene-viewer quick-look webxr"
-                              shadow-intensity="1"
-                              camera-controls
-                              ar-placement="floor"
-                              auto-rotate
-                              ar>
-                </model-viewer>
-                <section class="attribution">
-                    <h1>JACK SPICED GRILLED FISH</h1>
-                </section>
-            </div>
+  <main>
+   
+    <div class="section-header" id="ricebowls">
+        <h2>CIOTOLA DI RISO</h2>
+        <h5>RICEBOWLS</h5>
+        <div class="card" id="mexicanrice">
+            <model-viewer src="https://daspotdinear-bot.github.io/ARmenu/MariconRiceChicken_final.glb"
+                          ios-src="https://daspotdinear-bot.github.io/ARmenu/MariconRiceChicken_final.usdz"
+                          alt="mexicanrice"
+                          ar-modes="scene-viewer quick-look webxr"
+                          shadow-intensity="1"
+                          camera-controls
+                          ar-placement="floor"
+                          auto-rotate ar>
+            </model-viewer>
+            <section class="attribution">
+                <h5>MEXICAN RICE CHICKEN</h5>
+            </section>
         </div>
-        
-        <div class="section-header" id="maincourse2">
-            <h2>VEG ZHU CAI</h2>
-            <h5>MAIN COURSE</h5>
-            
-        </div>
-        
-        <div class="section-header" id="noodles">
-            <h2>MIANTIAO</h2>
-            <h5>NOODLES</h5>
-           
-        </div>
-        
-        <div class="section-header" id="sauces">
-            <h2>JIANG ZHI</h2>
-            <h5>SAUCES</h5>
-            <div class="card" id="thainonvegcurryyellow">
-                <model-viewer class="ar-model"
-                              src="https://daspotdinear-bot.github.io/ARmenu/thainonvegcurryyellow_final.glb"
-                              ios-src="https://daspotdinear-bot.github.io/ARmenu/thainonvegcurryyellow_final.usdz"
-                              poster="https://daspotdinear-bot.github.io/ARmenu/thainonvegcurryyellow_final.glb.glb"
-                              alt="thainonvegcurryyellow"
-                              ar-modes="scene-viewer quick-look webxr"
-                              shadow-intensity="1"
-                              camera-controls
-                              ar-placement="floor"
-                              auto-rotate
-                              ar>
-                </model-viewer>
-                <section class="attribution">
-                    <h1>THAI NON VEG CURRY (YELLOW)</h1>
-                </section>
-            </div>
-            <div class="card" id="thainonvegcurrygreen">
-                <model-viewer class="ar-model"
-                              src="https://daspotdinear-bot.github.io/ARmenu/thainonvegcurrygreen_final.glb"
-                              ios-src="https://daspotdinear-bot.github.io/ARmenu/thainonvegcurrygreen_final.usdz"
-                              poster="https://daspotdinear-bot.github.io/ARmenu/thainonvegcurrygreen_final.glb.glb"
-                              alt="thainonvegcurrygreen"
-                              ar-modes="scene-viewer quick-look webxr"
-                              shadow-intensity="1"
-                              camera-controls
-                              ar-placement="floor"
-                              auto-rotate
-                              ar>
-                </model-viewer>
-                <section class="attribution">
-                    <h1>THAI NON VEG CURRY (GREEN)</h1>
-                </section>
-            </div>
-            <div class="card" id="thainonvegcurryred">
-                <model-viewer class="ar-model"
-                              src="https://daspotdinear-bot.github.io/ARmenu/thainonvegcurryred_final.glb"
-                              ios-src="https://daspotdinear-bot.github.io/ARmenu/thainonvegcurryred_final.usdz"
-                              poster="https://daspotdinear-bot.github.io/ARmenu/thainonvegcurryred_final.glb.glb"
-                              alt="thainonvegcurryred"
-                              ar-modes="scene-viewer quick-look webxr"
-                              shadow-intensity="1"
-                              camera-controls
-                              ar-placement="floor"
-                              auto-rotate
-                              ar>
-                </model-viewer>
-                <section class="attribution">
-                    <h1>THAI NON VEG CURRY (RED)</h1>
-                </section>
-            </div>
-        </div>
+    </div>
+    <div class="section-header" id="desserts">
+        <h2>DESSERTS</h2>
        
-        <div class="section-header" id="sizzlers">
-            <h2>SMOKY SIZZLERS</h2>
-            <div class="card" id="chickensteaksizzler">
-                <model-viewer class="ar-model"
-                              src="https://daspotdinear-bot.github.io/ARmenu/Chickensteaksizzler_final.glb"
-                              ios-src="https://daspotdinear-bot.github.io/ARmenu/Chickensteaksizzler_final.usdz"
-                              poster="https://daspotdinear-bot.github.io/ARmenu/Chickensteaksizzler_final.glb"
-                              alt="chickensteaksizzler"
-                              ar-modes="scene-viewer quick-look webxr"
-                              shadow-intensity="1"
-                              camera-controls
-                              ar-placement="floor"
-                              auto-rotate
-                              ar>
-                </model-viewer>
-                <section class="attribution">
-                    <h1>CHICKEN STEAK SIZZLER</h1>
-                </section>
-            </div>
-        </div>
-       
-        <div class="section-header" id="ramen">
-            <h2>RAMEN</h2>
-            <div class="card" id="vegramen">
-                <model-viewer class="ar-model"
-                              src="https://daspotdinear-bot.github.io/ARmenu/vegramen_final.glb"
-                              ios-src="https://daspotdinear-bot.github.io/ARmenu/vegramen_final.usdz"
-                              poster="https://daspotdinear-bot.github.io/ARmenu/vegramen_final.glb"
-                              alt="vegramen"
-                              ar-modes="scene-viewer quick-look webxr"
-                              shadow-intensity="1"
-                              camera-controls
-                              ar-placement="floor"
-                              auto-rotate
-                              ar>
-                </model-viewer>
-                <section class="attribution">
-                    <h1>VEG RAMEN</h1>
-                </section>
-            </div>
-            <div class="card" id="chickenramen">
-                <model-viewer class="ar-model"
-                              src="https://daspotdinear-bot.github.io/ARmenu/Chickenramen_final.glb"
-                              ios-src="https://daspotdinear-bot.github.io/ARmenu/Chickenramen_final.usdz"
-                              poster="https://daspotdinear-bot.github.io/ARmenu/Chickenramen_final.glb"
-                              alt="chickenramen"
-                              ar-modes="scene-viewer quick-look webxr"
-                              shadow-intensity="1"
-                              camera-controls
-                              ar-placement="floor"
-                              auto-rotate
-                              ar>
-                </model-viewer>
-                <section class="attribution">
-                    <h1>CHICKEN RAMEN</h1>
-                </section>
-            </div>
-        </div>
-        <div class="section-header" id="pantobento">
-            <h2>PAN TO BENTO</h2>
-        </div>
-        <div class="section-header" id="pizzeria">
-            <h2>PIZZERIA</h2>
-            <div class="card" id="paneertikkapizza">
-                <model-viewer class="ar-model"
-                              src="https://daspotdinear-bot.github.io/ARmenu/paneertikkapizza_final.glb"
-                              ios-src="https://daspotdinear-bot.github.io/ARmenu/paneertikkapizza_final.usdz"
-                              poster="https://daspotdinear-bot.github.io/ARmenu/paneertikkapizza_final.glb"
-                              alt="paneertikka"
-                              ar-modes="scene-viewer quick-look webxr"
-                              shadow-intensity="1"
-                              camera-controls
-                              ar-placement="floor"
-                              auto-rotate
-                              ar>
-                </model-viewer>
-                <section class="attribution">
-                    <h1>PANEER TIKKA PIZZA</h1>
-                </section>
-            </div>
-        </div>
-        <div class="section-header" id="burger">
-            <h2>BURGERS</h2>
-            <div class="card" id="chickenburger">
-                <model-viewer class="ar-model"
-                              src="https://daspotdinear-bot.github.io/ARmenu/Chickenburger_Final.glb"
-                              ios-src="https://daspotdinear-bot.github.io/ARmenu/Chickenburger_Final.usdz"
-                              poster="https://daspotdinear-bot.github.io/ARmenu/Chickenburger_Final.glb"
-                              alt="chickenburger"
-                              ar-modes="scene-viewer quick-look webxr"
-                              shadow-intensity="1"
-                              camera-controls
-                              ar-placement="floor"
-                              auto-rotate
-                              ar>
-                </model-viewer>
-                <section class="attribution">
-                    <h1>CHICKEN BURGER</h1>
-                </section>
-            </div>
-            <div class="card" id="pulledchickenburger">
-                <model-viewer class="ar-model"
-                              src="https://daspotdinear-bot.github.io/ARmenu/Charcoalpulledchickenburger_final.glb"
-                              ios-src="https://daspotdinear-bot.github.io/ARmenu/Charcoalpulledchickenburger_final.usdz"
-                              poster="https://daspotdinear-bot.github.io/ARmenu/Charcoalpulledchickenburger_final.glb"
-                              alt="pulledchickenburger"
-                              ar-modes="scene-viewer quick-look webxr"
-                              shadow-intensity="1"
-                              camera-controls
-                              ar-placement="floor"
-                              auto-rotate
-                              ar>
-                </model-viewer>
-                <section class="attribution">
-                    <h1>PULLED CHICKEN BURGER</h1>
-                </section>
-            </div>
-            <div class="card" id="charcoalchickenburger">
-                <model-viewer class="ar-model"
-                              src="https://daspotdinear-bot.github.io/ARmenu/pulledchickenburger_final.glb"
-                              ios-src="https://daspotdinear-bot.github.io/ARmenu/pulledchickenburger_final.usdz"
-                              poster="https://daspotdinear-bot.github.io/ARmenu/pulledchickenburger_final.glb"
-                              alt="charcoalchickenburger"
-                              ar-modes="scene-viewer quick-look webxr"
-                              shadow-intensity="1"
-                              camera-controls
-                              ar-placement="floor"
-                              auto-rotate
-                              ar>
-                </model-viewer>
-                <section class="attribution">
-                    <h1>CHARCOAL CHICKEN BURGER</h1>
-                </section>
-            </div>
-        </div>
-        <div class="section-header" id="sandwiches">
-            <h2>SANDWICHES</h2>
-            <div class="card" id="paneersandwich">
-                <model-viewer class="ar-model"
-                              src="https://daspotdinear-bot.github.io/ARmenu/periperipaneersandeveg_final.glb"
-                              ios-src="https://daspotdinear-bot.github.io/ARmenu/periperipaneersandeveg_final.usdz"
-                              poster="https://daspotdinear-bot.github.io/ARmenu/periperipaneersandeveg_final.glb"
-                              alt="paneersandwich"
-                              ar-modes="scene-viewer quick-look webxr"
-                              shadow-intensity="1"
-                              camera-controls
-                              ar-placement="floor"
-                              auto-rotate
-                              ar>
-                </model-viewer>
-                <section class="attribution">
-                    <h1>PANEER CLUB SANDWICHED</h1>
-                </section>
-            </div>
-        </div>
-        <div class="section-header" id="momosrolls">
-            <h2>MOMOS & ROLLS</h2>
-            <div class="card" id="chickenmomos">
-                <model-viewer class="ar-model"
-                              src="https://daspotdinear-bot.github.io/ARmenu/ChickenMomos_Final.glb"
-                              ios-src="https://daspotdinear-bot.github.io/ARmenu/ChickenMomos_Final.usdz"
-                              poster="https://daspotdinear-bot.github.io/ARmenu/ChickenMomos_Final.glb"
-                              alt="chickenmomos"
-                              ar-modes="scene-viewer quick-look webxr"
-                              shadow-intensity="1"
-                              camera-controls
-                              ar-placement="floor"
-                              auto-rotate
-                              ar>
-                </model-viewer>
-                <section class="attribution">
-                    <h1>CHICKEN MOMOS</h1>
-                </section>
-            </div>
-            <div class="card" id="vegmomos">
-                <model-viewer class="ar-model"
-                              src="https://daspotdinear-bot.github.io/ARmenu/CheeseBalls_Final.glb"
-                              ios-src="https://daspotdinear-bot.github.io/ARmenu/CheeseBalls_Final.usdz"
-                              poster="https://daspotdinear-bot.github.io/ARmenu/CheeseBalls_Final.glb"
-                              alt="vegmomos"
-                              ar-modes="scene-viewer quick-look webxr"
-                              shadow-intensity="1"
-                              camera-controls
-                              ar-placement="floor"
-                              auto-rotate
-                              ar>
-                </model-viewer>
-                <section class="attribution">
-                    <h1>VEG MOMOS</h1>
-                </section>
-            </div>
-            <div class="card" id="tomyummomosveg">
-                <model-viewer class="ar-model"
-                              src="https://daspotdinear-bot.github.io/ARmenu/vegmomos_final.glb"
-                              ios-src="https://daspotdinear-bot.github.io/ARmenu/vegmomos_final.usdz"
-                              poster="https://daspotdinear-bot.github.io/ARmenu/vegmomos_final.glb"
-                              alt="tomyummomosveg"
-                              ar-modes="scene-viewer quick-look webxr"
-                              shadow-intensity="1"
-                              camera-controls
-                              ar-placement="floor"
-                              auto-rotate
-                              ar>
-                </model-viewer>
-                <section class="attribution">
-                    <h1>TOM YUM MOMOS (VEG)</h1>
-                </section>
-            </div>
-            <div class="card" id="tomyummomosnonveg">
-                <model-viewer class="ar-model"
-                              src="https://daspotdinear-bot.github.io/ARmenu/tomyummomosnonveg_final.glb"
-                              ios-src="https://daspotdinear-bot.github.io/ARmenu/tomyummomosnonveg_final.usdz"
-                              poster="https://daspotdinear-bot.github.io/ARmenu/tomyummomosnonveg_final.glb"
-                              alt="tomyummomosnonveg"
-                              ar-modes="scene-viewer quick-look webxr"
-                              shadow-intensity="1"
-                              camera-controls
-                              ar-placement="floor"
-                              auto-rotate
-                              ar>
-                </model-viewer>
-                <section class="attribution">
-                    <h1>TOM YUM MOMOS (NONVEG)</h1>
-                </section>
-            </div>
-        </div>
-        <div class="section-header" id="bruschettas">
-            <h2>BRUSCHETTAS</h2>
-        </div>
-        <div class="section-header" id="quesedilla">
-            <h2>QUESEDILLA</h2>
-        </div>
-        <div class="section-header" id="enchilades">
-            <h2>ENCHILADES</h2>
-        </div>
-        <div class="section-header" id="appetisers">
-            <h2>WESTERN</h2>
-            <h5>APPETISERS</h5>
-            <div class="card" id="cheeseballs">
-                <model-viewer class="ar-model"
-                              src="https://daspotdinear-bot.github.io/ARmenu/tomyummomosveg_final.glb"
-                              ios-src="https://daspotdinear-bot.github.io/ARmenu/tomyummomosveg_final.usdz"
-                              poster="https://daspotdinear-bot.github.io/ARmenu/tomyummomosveg_final.glb"
-                              alt="cheeseballs"
-                              ar-modes="scene-viewer quick-look webxr"
-                              shadow-intensity="1"
-                              camera-controls
-                              ar-placement="floor"
-                              auto-rotate
-                              ar>
-                </model-viewer>
-                <section class="attribution">
-                    <h1>CHEESE BALLS</h1>
-                </section>
-            </div>
-            <div class="card" id="koreanfriedchicken">
-                <model-viewer class="ar-model"
-                              src="https://daspotdinear-bot.github.io/ARmenu/Koreanfriedchicken_final.glb"
-                              ios-src="https://daspotdinear-bot.github.io/ARmenu/Koreanfriedchicken_final.usdc"
-                              poster="https://daspotdinear-bot.github.io/ARmenu/Koreanfriedchicken_final.glb"
-                              alt="koreanfriedchicken"
-                              ar-modes="scene-viewer quick-look webxr"
-                              shadow-intensity="1"
-                              camera-controls
-                              ar-placement="floor"
-                              auto-rotate
-                              ar>
-                </model-viewer>
-                <section class="attribution">
-                    <h1>KOREAN FRIED CHICKEN</h1>
-                </section>
-            </div>
-            <div class="card" id="phuketfish">
-                <model-viewer class="ar-model"
-                              src="https://daspotdinear-bot.github.io/ARmenu/phuketfish_final.glb"
-                              ios-src="https://daspotdinear-bot.github.io/ARmenu/phuketfish_final.usdz"
-                              poster="https://daspotdinear-bot.github.io/ARmenu/phuketfish_final.glb"
-                              alt="phuketfish"
-                              ar-modes="scene-viewer quick-look webxr"
-                              shadow-intensity="1"
-                              camera-controls
-                              ar-placement="floor"
-                              auto-rotate
-                              ar>
-                </model-viewer>
-                <section class="attribution">
-                    <h1>PHUKET FISH</h1>
-                </section>
-            </div>
-            <div class="card" id="tempuraprawn">
-                <model-viewer class="ar-model"
-                              src="https://daspotdinear-bot.github.io/ARmenu/Afganimurghtikka_final.glb"
-                              ios-src="https://daspotdinear-bot.github.io/ARmenu/Afganimurghtikka_final.usdz"
-                              poster="https://daspotdinear-bot.github.io/ARmenu/Afganimurghtikka_final.glb"
-                              alt="tempuraprawn"
-                              ar-modes="scene-viewer quick-look webxr"
-                              shadow-intensity="1"
-                              camera-controls
-                              ar-placement="floor"
-                              auto-rotate
-                              ar>
-                </model-viewer>
-                <section class="attribution">
-                    <h1>TEMPURA PRAWN</h1>
-                </section>
-            </div>
-        </div>
-        <div class="section-header" id="woktofork">
-            <h2>WOK TO FORK</h2>
-        </div>
-        <div class="section-header" id="farmtofork">
-            <h2>FARM TO FORK</h2>
-        </div>
-
     </div>
 
-    <div class="footer">© 2025 Dine AR. All rights reserved.</div>
+    <div class="section-header" id="maincourse">
+        <h2>PIATTO PRINCIPALE</h2>
+        <h5>MAIN COURSE</h5>
+        <div class="card" id="marrymechicken">
+            <model-viewer src="https://daspotdinear-bot.github.io/ARmenu/marrychicken_final.glb"
+                          ios-src="https://daspotdinear-bot.github.io/ARmenu/marrychicken_final.usdz"
+                          poster="https://daspotdinear-bot.github.io/ARmenu/marrychicken_final.glb"
+                          alt="marrymechicken"
+                          ar-modes="scene-viewer quick-look webxr"
+                          shadow-intensity="1"
+                          camera-controls
+                          ar-placement="floor"
+                          auto-rotate
+                          ar>
+            </model-viewer>
+            <section class="attribution">
+                <h5>MARRY ME CHICKEN</h5>
+            </section>
+        </div>
+        <div class="card" id="lemonbutterchicken">
+            <model-viewer src="https://daspotdinear-bot.github.io/ARmenu/Lemonbutterchicken_final.glb"
+                          ios-src="https://daspotdinear-bot.github.io/ARmenu/Lemonbutterchicken_final.usdz"
+                          poster="https://daspotdinear-bot.github.io/ARmenu/Lemonbutterchicken_final.glb"
+                          alt="lemonbutterchicken"
+                          ar-modes="scene-viewer quick-look webxr"
+                          shadow-intensity="1"
+                          camera-controls
+                          ar-placement="floor"
+                          auto-rotate
+                          ar>
+            </model-viewer>
+            <section class="attribution">
+                <h5>LEMON BUTTER CHICKEN</h5>
+            </section>
+        </div>
+        <div class="card" id="buffalolemonpepperfish">
+            <model-viewer src="https://daspotdinear-bot.github.io/ARmenu/Lemonpepperfish_final.glb"
+                          ios-src="https://daspotdinear-bot.github.io/ARmenu/Lemonpepperfish_final.usdz"
+                          poster="https://daspotdinear-bot.github.io/ARmenu/Lemonpepperfish_final.glb"
+                          alt="buffalolemonpepperfish"
+                          ar-modes="scene-viewer quick-look webxr"
+                          shadow-intensity="1"
+                          camera-controls
+                          ar-placement="floor"
+                          auto-rotate
+                          ar>
+            </model-viewer>
+            <section class="attribution">
+                <h5>BUFFALO LEMON PEPPER FISH</h5>
+            </section>
+        </div>
+        <div class="card" id="jackspicedgrilledfish">
+            <model-viewer src="https://daspotdinear-bot.github.io/ARmenu/Jarkgrilledfish_final.glb"
+                          ios-src="https://daspotdinear-bot.github.io/ARmenu/Jarkgrilledfish_final.usdz"
+                          poster="https://daspotdinear-bot.github.io/ARmenu/Jarkgrilledfish_final.glb"
+                          alt="jackspicedgrilledfish"
+                          ar-modes="scene-viewer quick-look webxr"
+                          shadow-intensity="1"
+                          camera-controls
+                          ar-placement="floor"
+                          auto-rotate
+                          ar>
+            </model-viewer>
+            <section class="attribution">
+                <h5>JACK SPICED GRILLED FISH</h5>
+            </section>
+        </div>
+    </div>
+    
+    <div class="section-header" id="maincourse2">
+        <h2>VEG ZHU CAI</h2>
+        <h5>MAIN COURSE</h5>
+        
+    </div>
+    
+    <div class="section-header" id="noodles">
+        <h2>MIANTIAO</h2>
+        <h5>NOODLES</h5>
+       
+    </div>
+    
+    <div class="section-header" id="sauces">
+        <h2>JIANG ZHI</h2>
+        <h5>SAUCES</h5>
+        <div class="card" id="thainonvegcurryyellow">
+            <model-viewer class="ar-model"
+                          src="https://daspotdinear-bot.github.io/ARmenu/thainonvegcurryyellow_final.glb"
+                          ios-src="https://daspotdinear-bot.github.io/ARmenu/thainonvegcurryyellow_final.usdz"
+                          poster="https://daspotdinear-bot.github.io/ARmenu/thainonvegcurryyellow_final.glb"
+                          alt="thainonvegcurryyellow"
+                          ar-modes="scene-viewer quick-look webxr"
+                          shadow-intensity="1"
+                          camera-controls
+                          ar-placement="floor"
+                          auto-rotate
+                          ar>
+            </model-viewer>
+            <section class="attribution">
+                <h5>THAI NON VEG CURRY (YELLOW)</h5>
+            </section>
+        </div>
+        <div class="card" id="thainonvegcurrygreen">
+            <model-viewer class="ar-model"
+                          src="https://daspotdinear-bot.github.io/ARmenu/thainonvegcurrygreen_final.glb"
+                          ios-src="https://daspotdinear-bot.github.io/ARmenu/thainonvegcurrygreen_final.usdz"
+                          poster="https://daspotdinear-bot.github.io/ARmenu/thainonvegcurrygreen_final.glb"
+                          alt="thainonvegcurrygreen"
+                          ar-modes="scene-viewer quick-look webxr"
+                          shadow-intensity="1"
+                          camera-controls
+                          ar-placement="floor"
+                          auto-rotate
+                          ar>
+            </model-viewer>
+            <section class="attribution">
+                <h5>THAI NON VEG CURRY (GREEN)</h5>
+            </section>
+        </div>
+        <div class="card" id="thainonvegcurryred">
+            <model-viewer class="ar-model"
+                          src="https://daspotdinear-bot.github.io/ARmenu/thainonvegcurryred_final.glb"
+                          ios-src="https://daspotdinear-bot.github.io/ARmenu/thainonvegcurryred_final.usdz"
+                          poster="https://daspotdinear-bot.github.io/ARmenu/thainonvegcurryred_final.glb"
+                          alt="thainonvegcurryred"
+                          ar-modes="scene-viewer quick-look webxr"
+                          shadow-intensity="1"
+                          camera-controls
+                          ar-placement="floor"
+                          auto-rotate
+                          ar>
+            </model-viewer>
+            <section class="attribution">
+                <h5>THAI NON VEG CURRY (RED)</h5>
+            </section>
+        </div>
+    </div>
+   
+    <div class="section-header" id="sizzlers">
+        <h2>SMOKY SIZZLERS</h2>
+        <div class="card" id="chickensteaksizzler">
+            <model-viewer class="ar-model"
+                          src="https://daspotdinear-bot.github.io/ARmenu/Chickensteaksizzler_final.glb"
+                          ios-src="https://daspotdinear-bot.github.io/ARmenu/Chickensteaksizzler_final.usdz"
+                          poster="https://daspotdinear-bot.github.io/ARmenu/Chickensteaksizzler_final.glb"
+                          alt="chickensteaksizzler"
+                          ar-modes="scene-viewer quick-look webxr"
+                          shadow-intensity="1"
+                          camera-controls
+                          ar-placement="floor"
+                          auto-rotate
+                          ar>
+            </model-viewer>
+            <section class="attribution">
+                <h5>CHICKEN STEAK SIZZLER</h5>
+            </section>
+        </div>
+    </div>
+   
+    <div class="section-header" id="ramen">
+        <h2>RAMEN</h2>
+        <div class="card" id="vegramen">
+            <model-viewer class="ar-model"
+                          src="https://daspotdinear-bot.github.io/ARmenu/vegramen_final.glb"
+                          ios-src="https://daspotdinear-bot.github.io/ARmenu/vegramen_final.usdz"
+                          poster="https://daspotdinear-bot.github.io/ARmenu/vegramen_final.glb"
+                          alt="vegramen"
+                          ar-modes="scene-viewer quick-look webxr"
+                          shadow-intensity="1"
+                          camera-controls
+                          ar-placement="floor"
+                          auto-rotate
+                          ar>
+            </model-viewer>
+            <section class="attribution">
+                <h5>VEG RAMEN</h5>
+            </section>
+        </div>
+        <div class="card" id="chickenramen">
+            <model-viewer class="ar-model"
+                          src="https://daspotdinear-bot.github.io/ARmenu/Chickenramen_final.glb"
+                          ios-src="https://daspotdinear-bot.github.io/ARmenu/Chickenramen_final.usdz"
+                          poster="https://daspotdinear-bot.github.io/ARmenu/Chickenramen_final.glb"
+                          alt="chickenramen"
+                          ar-modes="scene-viewer quick-look webxr"
+                          shadow-intensity="1"
+                          camera-controls
+                          ar-placement="floor"
+                          auto-rotate
+                          ar>
+            </model-viewer>
+            <section class="attribution">
+                <h5>CHICKEN RAMEN</h5>
+            </section>
+        </div>
+    </div>
+    <div class="section-header" id="pantobento">
+        <h2>PAN TO BENTO</h2>
+    </div>
+    <div class="section-header" id="pizzeria">
+        <h2>PIZZERIA</h2>
+        <div class="card" id="paneertikkapizza">
+            <model-viewer class="ar-model"
+                          src="https://daspotdinear-bot.github.io/ARmenu/paneertikkapizza_final.glb"
+                          ios-src="https://daspotdinear-bot.github.io/ARmenu/paneertikkapizza_final.usdz"
+                          poster="https://daspotdinear-bot.github.io/ARmenu/paneertikkapizza_final.glb"
+                          alt="paneertikka"
+                          ar-modes="scene-viewer quick-look webxr"
+                          shadow-intensity="1"
+                          camera-controls
+                          ar-placement="floor"
+                          auto-rotate
+                          ar>
+            </model-viewer>
+            <section class="attribution">
+                <h5>PANEER TIKKA PIZZA</h5>
+            </section>
+        </div>
+    </div>
+    <div class="section-header" id="burger">
+        <h2>BURGERS</h2>
+        <div class="card" id="chickenburger">
+            <model-viewer class="ar-model"
+                          src="https://daspotdinear-bot.github.io/ARmenu/Chickenburger_Final.glb"
+                          ios-src="https://daspotdinear-bot.github.io/ARmenu/Chickenburger_Final.usdz"
+                          poster="https://daspotdinear-bot.github.io/ARmenu/Chickenburger_Final.glb"
+                          alt="chickenburger"
+                          ar-modes="scene-viewer quick-look webxr"
+                          shadow-intensity="1"
+                          camera-controls
+                          ar-placement="floor"
+                          auto-rotate
+                          ar>
+            </model-viewer>
+            <section class="attribution">
+                <h5>CHICKEN BURGER</h5>
+            </section>
+        </div>
+        <div class="card" id="pulledchickenburger">
+            <model-viewer class="ar-model"
+                          src="https://daspotdinear-bot.github.io/ARmenu/Charcoalpulledchickenburger_final.glb"
+                          ios-src="https://daspotdinear-bot.github.io/ARmenu/Charcoalpulledchickenburger_final.usdz"
+                          poster="https://daspotdinear-bot.github.io/ARmenu/Charcoalpulledchickenburger_final.glb"
+                          alt="pulledchickenburger"
+                          ar-modes="scene-viewer quick-look webxr"
+                          shadow-intensity="1"
+                          camera-controls
+                          ar-placement="floor"
+                          auto-rotate
+                          ar>
+            </model-viewer>
+            <section class="attribution">
+                <h5>PULLED CHICKEN BURGER</h5>
+            </section>
+        </div>
+        <div class="card" id="charcoalchickenburger">
+            <model-viewer class="ar-model"
+                          src="https://daspotdinear-bot.github.io/ARmenu/pulledchickenburger_final.glb"
+                          ios-src="https://daspotdinear-bot.github.io/ARmenu/pulledchickenburger_final.usdz"
+                          poster="https://daspotdinear-bot.github.io/ARmenu/pulledchickenburger_final.glb"
+                          alt="charcoalchickenburger"
+                          ar-modes="scene-viewer quick-look webxr"
+                          shadow-intensity="1"
+                          camera-controls
+                          ar-placement="floor"
+                          auto-rotate
+                          ar>
+            </model-viewer>
+            <section class="attribution">
+                <h5>CHARCOAL CHICKEN BURGER</h5>
+            </section>
+        </div>
+    </div>
+    <div class="section-header" id="sandwiches">
+        <h2>SANDWICHES</h2>
+        <div class="card" id="paneersandwich">
+            <model-viewer class="ar-model"
+                          src="https://daspotdinear-bot.github.io/ARmenu/periperipaneersandeveg_final.glb"
+                          ios-src="https://daspotdinear-bot.github.io/ARmenu/periperipaneersandeveg_final.usdz"
+                          poster="https://daspotdinear-bot.github.io/ARmenu/periperipaneersandeveg_final.glb"
+                          alt="paneersandwich"
+                          ar-modes="scene-viewer quick-look webxr"
+                          shadow-intensity="1"
+                          camera-controls
+                          ar-placement="floor"
+                          auto-rotate
+                          ar>
+            </model-viewer>
+            <section class="attribution">
+                <h5>PANEER CLUB SANDWICHED</h5>
+            </section>
+        </div>
+    </div>
+    <div class="section-header" id="momosrolls">
+        <h2>MOMOS & ROLLS</h2>
+        <div class="card" id="chickenmomos">
+            <model-viewer class="ar-model"
+                          src="https://daspotdinear-bot.github.io/ARmenu/ChickenMomos_Final.glb"
+                          ios-src="https://daspotdinear-bot.github.io/ARmenu/ChickenMomos_Final.usdz"
+                          poster="https://daspotdinear-bot.github.io/ARmenu/ChickenMomos_Final.glb"
+                          alt="chickenmomos"
+                          ar-modes="scene-viewer quick-look webxr"
+                          shadow-intensity="1"
+                          camera-controls
+                          ar-placement="floor"
+                          auto-rotate
+                          ar>
+            </model-viewer>
+            <section class="attribution">
+                <h5>CHICKEN MOMOS</h5>
+            </section>
+        </div>
+        <div class="card" id="vegmomos">
+            <model-viewer class="ar-model"
+                          src="https://daspotdinear-bot.github.io/ARmenu/CheeseBalls_Final.glb"
+                          ios-src="https://daspotdinear-bot.github.io/ARmenu/CheeseBalls_Final.usdz"
+                          poster="https://daspotdinear-bot.github.io/ARmenu/CheeseBalls_Final.glb"
+                          alt="vegmomos"
+                          ar-modes="scene-viewer quick-look webxr"
+                          shadow-intensity="1"
+                          camera-controls
+                          ar-placement="floor"
+                          auto-rotate
+                          ar>
+            </model-viewer>
+            <section class="attribution">
+                <h5>VEG MOMOS</h5>
+            </section>
+        </div>
+        <div class="card" id="tomyummomosveg">
+            <model-viewer class="ar-model"
+                          src="https://daspotdinear-bot.github.io/ARmenu/vegmomos_final.glb"
+                          ios-src="https://daspotdinear-bot.github.io/ARmenu/vegmomos_final.usdz"
+                          poster="https://daspotdinear-bot.github.io/ARmenu/vegmomos_final.glb"
+                          alt="tomyummomosveg"
+                          ar-modes="scene-viewer quick-look webxr"
+                          shadow-intensity="1"
+                          camera-controls
+                          ar-placement="floor"
+                          auto-rotate
+                          ar>
+            </model-viewer>
+            <section class="attribution">
+                <h5>TOM YUM MOMOS (VEG)</h5>
+            </section>
+        </div>
+        <div class="card" id="tomyummomosnonveg">
+            <model-viewer class="ar-model"
+                          src="https://daspotdinear-bot.github.io/ARmenu/tomyummomosnonveg_final.glb"
+                          ios-src="https://daspotdinear-bot.github.io/ARmenu/tomyummomosnonveg_final.usdz"
+                          poster="https://daspotdinear-bot.github.io/ARmenu/tomyummomosnonveg_final.glb"
+                          alt="tomyummomosnonveg"
+                          ar-modes="scene-viewer quick-look webxr"
+                          shadow-intensity="1"
+                          camera-controls
+                          ar-placement="floor"
+                          auto-rotate
+                          ar>
+            </model-viewer>
+            <section class="attribution">
+                <h5>TOM YUM MOMOS (NONVEG)</h5>
+            </section>
+        </div>
+    </div>
+    <div class="section-header" id="bruschettas">
+        <h2>BRUSCHETTAS</h2>
+    </div>
+    <div class="section-header" id="quesedilla">
+        <h2>QUESEDILLA</h2>
+    </div>
+    <div class="section-header" id="enchilades">
+        <h2>ENCHILADES</h2>
+    </div>
+    <div class="section-header" id="appetisers">
+        <h2>WESTERN</h2>
+        <h5>APPETISERS</h5>
+        <div class="card" id="cheeseballs">
+            <model-viewer class="ar-model"
+                          src="https://daspotdinear-bot.github.io/ARmenu/tomyummomosveg_final.glb"
+                          ios-src="https://daspotdinear-bot.github.io/ARmenu/tomyummomosveg_final.usdz"
+                          poster="https://daspotdinear-bot.github.io/ARmenu/tomyummomosveg_final.glb"
+                          alt="cheeseballs"
+                          ar-modes="scene-viewer quick-look webxr"
+                          shadow-intensity="1"
+                          camera-controls
+                          ar-placement="floor"
+                          auto-rotate
+                          ar>
+            </model-viewer>
+            <section class="attribution">
+                <h5>CHEESE BALLS</h5>
+            </section>
+        </div>
+        <div class="card" id="koreanfriedchicken">
+            <model-viewer class="ar-model"
+                          src="https://daspotdinear-bot.github.io/ARmenu/Koreanfriedchicken_final.glb"
+                          ios-src="https://daspotdinear-bot.github.io/ARmenu/Koreanfriedchicken_final.usdc"
+                          poster="https://daspotdinear-bot.github.io/ARmenu/Koreanfriedchicken_final.glb"
+                          alt="koreanfriedchicken"
+                          ar-modes="scene-viewer quick-look webxr"
+                          shadow-intensity="1"
+                          camera-controls
+                          ar-placement="floor"
+                          auto-rotate
+                          ar>
+            </model-viewer>
+            <section class="attribution">
+                <h5>KOREAN FRIED CHICKEN</h5>
+            </section>
+        </div>
+        <div class="card" id="phuketfish">
+            <model-viewer class="ar-model"
+                          src="https://daspotdinear-bot.github.io/ARmenu/phuketfish_final.glb"
+                          ios-src="https://daspotdinear-bot.github.io/ARmenu/phuketfish_final.usdz"
+                          poster="https://daspotdinear-bot.github.io/ARmenu/phuketfish_final.glb"
+                          alt="phuketfish"
+                          ar-modes="scene-viewer quick-look webxr"
+                          shadow-intensity="1"
+                          camera-controls
+                          ar-placement="floor"
+                          auto-rotate
+                          ar>
+            </model-viewer>
+            <section class="attribution">
+                <h5>PHUKET FISH</h5>
+            </section>
+        </div>
+        <div class="card" id="tempuraprawn">
+            <model-viewer class="ar-model"
+                          src="https://daspotdinear-bot.github.io/ARmenu/Afganimurghtikka_final.glb"
+                          ios-src="https://daspotdinear-bot.github.io/ARmenu/Afganimurghtikka_final.usdz"
+                          poster="https://daspotdinear-bot.github.io/ARmenu/Afganimurghtikka_final.glb"
+                          alt="tempuraprawn"
+                          ar-modes="scene-viewer quick-look webxr"
+                          shadow-intensity="1"
+                          camera-controls
+                          ar-placement="floor"
+                          auto-rotate
+                          ar>
+            </model-viewer>
+            <section class="attribution">
+                <h5>TEMPURA PRAWN</h5>
+            </section>
+        </div>
+    </div>
+    <div class="section-header" id="woktofork">
+        <h2>WOK TO FORK</h2>
+    </div>
+    <div class="section-header" id="farmtofork">
+        <h2>FARM TO FORK</h2>
+    </div>
+
+  </main>
+
+  <footer class="attribution">© 2025 Dine AR. All rights reserved.</footer>
+
+  <script>
+    // Hamburger menu toggle
+    const menuToggle = document.getElementById('menuToggle');
+    const navLinks = document.getElementById('navLinks');
+
+    menuToggle.addEventListener('click', () => {
+      navLinks.classList.toggle('active');
+    });
+
+    // Show only selected section from URL ?section=...
+    document.addEventListener("DOMContentLoaded", function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const sectionId = urlParams.get('section');
+      const sections = document.querySelectorAll('.section-header');
+
+      if(sectionId) {
+        sections.forEach(sec => sec.classList.add('hidden'));
+        const selected = document.getElementById(sectionId);
+        if(selected) selected.classList.remove('hidden');
+      }
+
+      // Pause all models initially
+      const models = document.querySelectorAll('model-viewer');
+      models.forEach(model => {
+        model.pause();
+        model.addEventListener('ar-status', (event) => {
+          if(event.detail.status === 'session-started') {
+            model.currentTime = 0;
+            model.play();
+          }
+          if(event.detail.status === 'not-presenting') {
+            model.pause();
+          }
+        });
+      });
+    });
+  </script>
 </body>
 </html>
