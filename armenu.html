@@ -397,28 +397,21 @@
         box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     ">
         <!-- Data yet to be added -->
-          <div class="model-wrapper">
+        <div class="model-wrapper">
+  <div class="dish-overlay">CHICKEN MOMOS</div>
 
-    <!-- Overlay (hidden by default) -->
-    <div class="dish-overlay" id="dishOverlay">
-      CHICKEN MOMOS
-    </div>
-
-    <model-viewer
-      id="arViewer"
-      class="ar-model"
-      src="https://daspotdinear-bot.github.io/ARmenu/CheeseBalls_Final.glb"
-      ios-src="https://daspotdinear-bot.github.io/ARmenu/CheeseBalls_Final.usdz"
-      alt="Chicken Momos"
-      ar
-      ar-modes="webxr scene-viewer quick-look"
-      ar-placement="floor"
-      camera-controls
-      auto-rotate
-      shadow-intensity="1">
-    </model-viewer>
-
-  </div>
+  <model-viewer
+    class="ar-model"
+    src="https://daspotdinear-bot.github.io/ARmenu/CheeseBalls_Final.glb"
+    ios-src="https://daspotdinear-bot.github.io/ARmenu/CheeseBalls_Final.usdz"
+    ar
+    ar-modes="webxr scene-viewer quick-look"
+    ar-placement="floor"
+    camera-controls
+    auto-rotate
+    shadow-intensity="1">
+  </model-viewer>
+</div>
     </div>
        
     </div>
@@ -912,16 +905,23 @@
 
   <script>
     // Hamburger menu toggle
-     const viewer = document.getElementById('arViewer');
-  const overlay = document.getElementById('dishOverlay');
+document.querySelectorAll('.ar-model').forEach((viewer) => {
+  const wrapper = viewer.closest('.model-wrapper');
+  if (!wrapper) return;
+
+  const overlay = wrapper.querySelector('.dish-overlay');
+  if (!overlay) return;
 
   viewer.addEventListener('ar-status', (event) => {
     if (event.detail.status === 'session-started') {
-      overlay.style.display = 'block'; // show ONLY in AR
+      overlay.style.display = 'block';
     } else {
-      overlay.style.display = 'none';  // hide in web view
+      overlay.style.display = 'none';
     }
   });
+});
+
+
     const menuToggle = document.getElementById('menuToggle');
     const navLinks = document.getElementById('navLinks');
 
